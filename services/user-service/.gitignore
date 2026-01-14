@@ -60,8 +60,22 @@ logs/
 # Spring Boot
 spring-boot-devtools.properties
 
+# H2 Database (if used for testing)
+*.db
+*.trace.db
+
 # Sensitive data
 application-secrets.yml
 application-local.yml
 *.env
 .env
+src/main/resources/application-prod.yml
+
+# JWT Secret keys (NEVER commit these!)
+jwt-secret.key
+private-key.pem
+public-key.pem
+
+# Database migration files (be careful)
+# Uncomment if you don't want to commit migrations
+# src/main/resources/db/migration/

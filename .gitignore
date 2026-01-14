@@ -1,4 +1,4 @@
-# Maven
+# Maven (for parent POM if you have one)
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -7,8 +7,6 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
 
 # IntelliJ IDEA
 .idea/
@@ -25,13 +23,6 @@ bin/
 
 # VS Code
 .vscode/
-
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
 
 # macOS
 .DS_Store
@@ -50,18 +41,42 @@ Desktop.ini
 *.log
 logs/
 
+# Docker
+*.env
+.env
+docker-compose.override.yml
+
+# Docker volumes data (if using local volumes)
+# data/
+# postgres-data/
+# mongo-data/
+
+# Sensitive configuration
+secrets/
+*.key
+*.pem
+*.p12
+*.jks
+
 # Temporary files
 *.tmp
 *.bak
 *.swp
 *.swo
-*~.nib
 
-# Spring Boot
-spring-boot-devtools.properties
+# Node modules (if you add a frontend later)
+node_modules/
+npm-debug.log
+yarn-error.log
 
-# Sensitive data
-application-secrets.yml
-application-local.yml
-*.env
-.env
+# Build artifacts
+dist/
+build/
+
+# IDE-specific
+.vscode/
+.idea/
+
+# OS-specific
+Thumbs.db
+.DS_Store

@@ -1,0 +1,22 @@
+# Minimal bootstrap configuration for user-service
+# Most config is fetched from config-server
+
+spring:
+  application:
+    name: user-service
+  
+  # Config Server Connection
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: false
+      enabled: true
+
+# Local overrides (for development only)
+server:
+  port: 8081
+
+# For Docker, use environment variables
+# These will be overridden by config-server in production
