@@ -1,0 +1,49 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  
+  # IMPORTANT: Explicitly set profiles
+  profiles:
+    active: native
+  
+  cloud:
+    config:
+      server:
+        # Native profile configuration (local files)
+        native:
+          search-locations: classpath:/config
+        # Git profile (disabled for now)
+        git:
+          uri: file://${user.home}/config-repo
+          default-label: main
+          clone-on-start: false
+
+# Eureka Client Configuration
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: DEBUG
