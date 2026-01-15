@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Generate JWT token
-        String token = jwtService.generateAccessToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
 
         Set<Role> roles = user.getRoles().stream()
                 .map(UserRole::getRole)
