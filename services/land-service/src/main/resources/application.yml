@@ -1,0 +1,76 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: land-service
+
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    config:
+      uri: ${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
+      fail-fast: false
+      enabled: true
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://postgres:5432/landdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+
+
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: land-service
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+
+# JWT Configuration (for validation)
+jwt:
+  secret: your-256-bit-secret-key-change-this-in-production
+
+# Application Specific
+application:
+  land:
+    image:
+      allowed-extensions:
+        - jpg
+        - jpeg
+        - png
+        - webp
+      max-images-per-land: 10
+    document:
+      allowed-extensions:
+        - pdf
+        - doc
+        - docx
+      max-documents-per-land: 5
+  validation:
+    min-land-area: 100 # square meters
+    max-land-area: 1000000 # square meters
+
+

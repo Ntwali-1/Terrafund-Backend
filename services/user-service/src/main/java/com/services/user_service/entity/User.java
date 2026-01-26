@@ -40,6 +40,7 @@ public class User {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
 
@@ -49,4 +50,10 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void addRole(UserRole role) {
+        roles.add(role);
+        role.setUser(this);
+    }
+
 }

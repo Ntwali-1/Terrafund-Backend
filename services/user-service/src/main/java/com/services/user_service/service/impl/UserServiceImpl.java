@@ -91,8 +91,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse selectRole(Long userId, Role role) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdWithRoles(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
 
         // Check if user already has this role
         if (userRoleRepository.existsByUserIdAndRole(userId, role)) {
@@ -101,9 +102,10 @@ public class UserServiceImpl implements UserService {
 
         // Add new role
         UserRole userRole = new UserRole();
-        userRole.setUser(user);
         userRole.setRole(role);
-        userRoleRepository.save(userRole);
+        user.addRole(userRole);
+        userRepository.save(user);
+
 
         // Refresh user to get updated roles
         user = userRepository.findById(userId).get();
