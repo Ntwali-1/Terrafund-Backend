@@ -3,6 +3,7 @@ package com.services.user_service.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "roles")
 public class User {
 
     @Id
@@ -37,9 +39,11 @@ public class User {
     @Column(nullable = false)
     private Boolean isVerified = false;
 
+    @Column
+    private String jwt = null;
+
     @Column(nullable = false)
     private Boolean isActive = true;
-
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();

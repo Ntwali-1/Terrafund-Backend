@@ -24,11 +24,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints (no authentication required)
-                        .requestMatchers("/actuator/**", "/actuator/health/**").permitAll()
-                        .requestMatchers("/api/lands").permitAll() // Anyone can view list
-                        .requestMatchers("/api/lands/{id}").permitAll() // Anyone can view details
-                        .requestMatchers("/api/lands/search/**").permitAll() // Anyone can search
+                        // Swagger UI endpoints
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()  // Changed from /v3/api-docs to /v3/api-docs/**
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/configuration/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+
+                        // Actuator endpoints
+                        .requestMatchers("/actuator/**").permitAll()
+
+                        // Public land endpoints
+                        .requestMatchers("/api/lands").permitAll()
+                        .requestMatchers("/api/lands/{id}").permitAll()
+                        .requestMatchers("/api/lands/search/**").permitAll()
 
                         // Protected endpoints (authentication required)
                         .requestMatchers("/api/lands/**").authenticated()

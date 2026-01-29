@@ -40,13 +40,12 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/
+      defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
   instance:
-    hostname: land-service
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${random.value}
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
 
 application:
   land:
@@ -64,7 +63,7 @@ application:
         - docx
       max-documents-per-land: 5
   validation:
-    min-land-area: 100 # square meters
-    max-land-area: 1000000 # square meters
+    min-land-area: 100
+    max-land-area: 1000000
 
 

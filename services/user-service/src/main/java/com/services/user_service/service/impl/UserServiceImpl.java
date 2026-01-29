@@ -77,8 +77,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Account is deactivated");
         }
 
-        // Generate JWT token
-        String token = jwtService.generateToken(user.getEmail());
+        // Generate and save JWT token
+        String token = jwtService.generateToken(user);
+        user.setJwt(token);
+        userRepository.save(user);
 
         Set<Role> roles = user.getRoles().stream()
                 .map(UserRole::getRole)
@@ -94,7 +96,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByIdWithRoles(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-
         // Check if user already has this role
         if (userRoleRepository.existsByUserIdAndRole(userId, role)) {
             throw new RuntimeException("User already has this role");
@@ -104,8 +105,12 @@ public class UserServiceImpl implements UserService {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         user.addRole(userRole);
-        userRepository.save(user);
 
+        // Generate new JWT token with updated roles
+        String newToken = jwtService.generateToken(user);
+        user.setJwt(newToken);
+
+        userRepository.save(user);
 
         // Refresh user to get updated roles
         user = userRepository.findById(userId).get();

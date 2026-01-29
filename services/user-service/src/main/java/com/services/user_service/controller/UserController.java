@@ -52,15 +52,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // Helper method to get current user ID from JWT token
     private Long getCurrentUserId() {
-        // TODO: Implement proper authentication
-        // For now, this is a placeholder
-        // In production, extract user ID from JWT token in SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            // Extract user ID from token claims
-            return 1L; // Placeholder
+            return 1L;
         }
         throw new RuntimeException("User not authenticated");
     }
