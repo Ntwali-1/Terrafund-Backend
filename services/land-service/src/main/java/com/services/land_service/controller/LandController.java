@@ -158,6 +158,7 @@ public class LandController {
     }
 
     @PostMapping("/{id}/documents")
+    @PreAuthorize("hasRole('LAND_OWNER')")
     public ResponseEntity<LandResponse> addDocuments(
             @PathVariable Long id,
             @Valid @RequestBody UploadDocumentsRequest request) {
@@ -169,6 +170,7 @@ public class LandController {
     }
 
     @DeleteMapping("/{id}/images")
+    @PreAuthorize("hasRole('LAND_OWNER')")
     public ResponseEntity<LandResponse> removeImage(
             @PathVariable Long id,
             @RequestParam String imageUrl) {
@@ -180,6 +182,7 @@ public class LandController {
     }
 
     @DeleteMapping("/{id}/documents")
+    @PreAuthorize("hasRole('LAND_OWNER')")
     public ResponseEntity<LandResponse> removeDocument(
             @PathVariable Long id,
             @RequestParam String documentUrl) {

@@ -11,13 +11,14 @@
         <module name="eureka-server" />
         <module name="user-service" />
       </profile>
-      <profile name="Annotation profile for land-service" enabled="true">
+      <profile name="Annotation profile for investment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
+        <module name="investment-service" />
         <module name="land-service" />
       </profile>
     </annotationProcessing>
@@ -26,6 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="investment-service" options="-parameters" />
       <module name="land-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

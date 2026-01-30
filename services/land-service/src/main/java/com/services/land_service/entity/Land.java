@@ -61,12 +61,12 @@ public class Land {
     @Column(nullable = false, length = 50)
     private LandStatus status = LandStatus.AVAILABLE;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "land_images", joinColumns = @JoinColumn(name = "land_id"))
     @Column(name = "image_url")
     private List<String> imageUrls = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "land_documents", joinColumns = @JoinColumn(name = "land_id"))
     @Column(name = "document_url")
     private List<String> documentUrls = new ArrayList<>();
