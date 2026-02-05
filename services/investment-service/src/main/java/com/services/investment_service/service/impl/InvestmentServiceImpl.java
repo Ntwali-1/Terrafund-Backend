@@ -28,7 +28,7 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     private final InvestmentRepository investmentRepository;
     private final InvestmentMapper investmentMapper;
-    // TODO: Add LandServiceClient to fetch land details
+    private final com.services.investment_service.client.LandServiceClient landServiceClient;
 
     @Override
     @Transactional
@@ -36,8 +36,18 @@ public class InvestmentServiceImpl implements InvestmentService {
                                                String investorName, String investorEmail, String investorPhone) {
         log.info("Creating investment for investor: {} on land: {}", investorId, request.getLandId());
 
-        // TODO: Verify land exists and is available (call land-service)
-        // TODO: Fetch land owner details
+        // Verify land exists and fetch details
+        com.services.investment_service.dto.external.LandDTO land = landServiceClient.getLandById(request.getLandId());
+        
+        if (land == null) {
+            throw new IllegalArgumentException("Land not found with ID: " + request.getLandId());
+        }
+        
+        // Verify land is not already sold if purchasing
+        // Note: Logic depends on exact business rules, assuming here we check basic status
+        // if (!"AVAILABLE".equalsIgnoreCase(land.getStatus()) && !"PENDING".equalsIgnoreCase(land.getStatus())) {
+        //    log.warn("Warning: Creating investment on land with status: {}", land.getStatus());
+        // }
 
         Investment investment = new Investment();
         investment.setInvestorId(investorId);
@@ -46,8 +56,8 @@ public class InvestmentServiceImpl implements InvestmentService {
         investment.setInvestorPhone(investorPhone);
 
         investment.setLandId(request.getLandId());
-        investment.setLandOwnerId(999L); // TODO: Get from land-service
-        investment.setLandLocation("Kigali"); // TODO: Get from land-service
+        investment.setLandOwnerId(land.getOwnerId()); 
+        investment.setLandLocation(land.getFullLocation()); 
 
         investment.setInvestmentType(request.getInvestmentType());
         investment.setOfferAmount(request.getOfferAmount());

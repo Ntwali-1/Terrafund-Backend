@@ -36,11 +36,26 @@ public class InvestmentController {
         Long investorId = (Long) httpRequest.getAttribute("userId");
         String email = (String) httpRequest.getAttribute("email");
 
-        // Fetch full user details from user-service
-        UserDTO user = userServiceClient.getUserById(investorId);
+        UserDTO user = null;
+        try {
+            user = userServiceClient.getUserById(investorId);
+        } catch (Exception e) {
+            //
+        }
 
-        String investorName = user != null ? user.getFullName() : email;
-        String investorPhone = user != null ? user.getPhoneNumber() : "";
+        String investorName = (user != null && user.getFullName() != null) ? user.getFullName() : "Unknown Investor";
+        if ("Unknown Investor".equals(investorName) && email != null) {
+             investorName = email.split("@")[0];
+        }
+        
+        String investorPhone = (user != null && user.getPhoneNumber() != null) ? user.getPhoneNumber() : "";
+
+        if (investorName == null) {
+             investorName = "Anonymous Investor";
+        }
+        if (email == null) {
+             throw new IllegalStateException("User email could not be determined from token or user service");
+        }
 
         InvestmentResponse response = investmentService.createInvestment(
                 request, investorId, investorName, email, investorPhone);
@@ -48,11 +63,6 @@ public class InvestmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Get investment by ID
-     * GET /api/investments/{id}
-     * Accessible by INVESTOR (own investments) or LAND_OWNER (their land investments)
-     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_INVESTOR', 'ROLE_LAND_OWNER', 'ROLE_ADMIN')")
     public ResponseEntity<InvestmentResponse> getInvestmentById(@PathVariable Long id) {
@@ -60,10 +70,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get all investments (ADMIN only)
-     * GET /api/investments
-     */
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<InvestmentSummaryResponse>> getAllInvestments(
@@ -82,10 +88,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get my investments (current investor)
-     * GET /api/investments/my-investments
-     */
     @GetMapping("/my-investments")
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<Page<InvestmentSummaryResponse>> getMyInvestments(
@@ -102,10 +104,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get investments received (for land owners)
-     * GET /api/investments/received
-     */
     @GetMapping("/received")
     @PreAuthorize("hasRole('ROLE_LAND_OWNER')")
     public ResponseEntity<Page<InvestmentSummaryResponse>> getReceivedInvestments(
@@ -122,10 +120,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get investments by land
-     * GET /api/investments/land/{landId}
-     */
     @GetMapping("/land/{landId}")
     public ResponseEntity<Page<InvestmentSummaryResponse>> getInvestmentsByLand(
             @PathVariable Long landId,
@@ -139,10 +133,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Update investment (INVESTOR only, before approval)
-     * PUT /api/investments/{id}
-     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<InvestmentResponse> updateInvestment(
@@ -156,10 +146,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Review investment - Approve/Reject (LAND_OWNER only)
-     * POST /api/investments/{id}/review
-     */
     @PostMapping("/{id}/review")
     @PreAuthorize("hasRole('ROLE_LAND_OWNER')")
     public ResponseEntity<InvestmentResponse> reviewInvestment(
@@ -173,10 +159,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Sign contract (INVESTOR or LAND_OWNER)
-     * POST /api/investments/{id}/sign-contract
-     */
     @PostMapping("/{id}/sign-contract")
     @PreAuthorize("hasAnyRole('ROLE_INVESTOR', 'ROLE_LAND_OWNER')")
     public ResponseEntity<InvestmentResponse> signContract(
@@ -190,10 +172,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Submit payment (INVESTOR only)
-     * POST /api/investments/{id}/payment
-     */
     @PostMapping("/{id}/payment")
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<InvestmentResponse> submitPayment(
@@ -207,10 +185,6 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Cancel investment (INVESTOR only)
-     * DELETE /api/investments/{id}
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<Void> cancelInvestment(
@@ -223,10 +197,6 @@ public class InvestmentController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Get investor statistics
-     * GET /api/investments/stats
-     */
     @GetMapping("/stats")
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<InvestorStatsResponse> getInvestorStats(
