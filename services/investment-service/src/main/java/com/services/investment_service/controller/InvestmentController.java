@@ -1,10 +1,11 @@
 package com.services.investment_service.controller;
 
+import com.services.investment_service.client.UserServiceClient;
+import com.services.investment_service.dto.external.UserDTO;
 import com.services.investment_service.dto.request.*;
 import com.services.investment_service.dto.response.InvestmentResponse;
 import com.services.investment_service.dto.response.InvestmentSummaryResponse;
 import com.services.investment_service.dto.response.InvestorStatsResponse;
-import com.services.investment_service.entity.Investment.InvestmentStatus;
 import com.services.investment_service.service.InvestmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -24,11 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class InvestmentController {
 
     private final InvestmentService investmentService;
+    private final UserServiceClient userServiceClient;
 
-    /**
-     * Create investment (INVESTOR only)
-     * POST /api/investments
-     */
     @PostMapping
     @PreAuthorize("hasRole('ROLE_INVESTOR')")
     public ResponseEntity<InvestmentResponse> createInvestment(
@@ -38,9 +36,11 @@ public class InvestmentController {
         Long investorId = (Long) httpRequest.getAttribute("userId");
         String email = (String) httpRequest.getAttribute("email");
 
-        // You can fetch full user details from User Service if needed
-        String investorName = email; // Placeholder
-        String investorPhone = "";   // Placeholder
+        // Fetch full user details from user-service
+        UserDTO user = userServiceClient.getUserById(investorId);
+
+        String investorName = user != null ? user.getFullName() : email;
+        String investorPhone = user != null ? user.getPhoneNumber() : "";
 
         InvestmentResponse response = investmentService.createInvestment(
                 request, investorId, investorName, email, investorPhone);
