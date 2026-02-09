@@ -1,0 +1,102 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Auth endpoints (no authentication)
+        - id: user-service-auth
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**
+        
+        # User service endpoints
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - AuthenticationFilter
+        
+        # Investment service endpoints
+        - id: investment-service
+          uri: lb://investment-service
+          predicates:
+            - Path=/api/investments/**
+          filters:
+            - AuthenticationFilter
+        
+        # Land service endpoints
+        - id: land-service
+          uri: lb://land-service
+          predicates:
+            - Path=/api/lands/**
+          filters:
+            - AuthenticationFilter
+        
+        # Swagger UI routes for each service
+        - id: user-service-swagger
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/v3/api-docs/**
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        
+        - id: investment-service-swagger
+          uri: lb://investment-service
+          predicates:
+            - Path=/investment-service/v3/api-docs/**
+          filters:
+            - RewritePath=/investment-service/(?<segment>.*), /$\{segment}
+        
+        - id: land-service-swagger
+          uri: lb://land-service
+          predicates:
+            - Path=/land-service/v3/api-docs/**
+          filters:
+            - RewritePath=/land-service/(?<segment>.*), /$\{segment}
+      
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: false
+
+# Springdoc configuration for aggregated Swagger
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - name: User Service
+        url: /user-service/v3/api-docs
+      - name: Investment Service
+        url: /investment-service/v3/api-docs
+      - name: Land Service
+        url: /land-service/v3/api-docs
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.services.gateway: DEBUG

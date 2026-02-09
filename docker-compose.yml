@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Service Discovery
   eureka-server:
-    build: ./eureka-server
+    build: ./services/eureka-server
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -12,7 +12,7 @@ services:
 
   # Configuration Server
   config-server:
-    build: ./config-server
+    build: ./services/config-server
     container_name: config-server
     ports:
       - "8888:8888"
@@ -25,19 +25,18 @@ services:
 
   # User Service
   user-service:
-    build: ./user-service
+    build: ./services/user-service
     container_name: user-service
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/userdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/userdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
-      - JWT_SECRET=mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     depends_on:
-      - postgres
       - eureka-server
       - config-server
     networks:
@@ -73,6 +72,19 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - postgres
+    networks:
+      - land-platform-network
+
+  # API Gateway
+  api-gateway:
+    build: ./services/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
     networks:
       - land-platform-network
 
