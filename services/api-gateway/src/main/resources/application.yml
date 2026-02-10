@@ -7,13 +7,11 @@ spring:
   cloud:
     gateway:
       routes:
-        # Auth endpoints (no authentication)
         - id: user-service-auth
           uri: lb://user-service
           predicates:
             - Path=/api/auth/**
         
-        # User service endpoints
         - id: user-service
           uri: lb://user-service
           predicates:
@@ -21,7 +19,6 @@ spring:
           filters:
             - AuthenticationFilter
         
-        # Investment service endpoints
         - id: investment-service
           uri: lb://investment-service
           predicates:
@@ -29,7 +26,6 @@ spring:
           filters:
             - AuthenticationFilter
         
-        # Land service endpoints
         - id: land-service
           uri: lb://land-service
           predicates:
@@ -37,7 +33,6 @@ spring:
           filters:
             - AuthenticationFilter
         
-        # Swagger UI routes for each service
         - id: user-service-swagger
           uri: lb://user-service
           predicates:
@@ -72,7 +67,6 @@ spring:
             allowedHeaders: "*"
             allowCredentials: false
 
-# Springdoc configuration for aggregated Swagger
 springdoc:
   swagger-ui:
     enabled: true
