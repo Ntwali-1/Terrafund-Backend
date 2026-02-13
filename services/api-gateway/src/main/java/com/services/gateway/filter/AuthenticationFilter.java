@@ -28,8 +28,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            
-            // Log the request path for debugging
+
             System.out.println("Processing request: " + request.getURI().getPath());
             
             if (validator.isSecured.test(request)) {

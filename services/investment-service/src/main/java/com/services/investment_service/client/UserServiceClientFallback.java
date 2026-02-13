@@ -13,8 +13,6 @@ public class UserServiceClientFallback implements UserServiceClient {
         log.error("Fallback triggered: Unable to fetch user with ID: {} from user-service", id);
         log.error("User service might be down or unreachable");
 
-        // Return null - let the calling service handle this appropriately
-        // Alternative: throw a custom exception
         return null;
     }
 }

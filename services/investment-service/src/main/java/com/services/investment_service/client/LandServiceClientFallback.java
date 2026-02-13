@@ -13,8 +13,6 @@ public class LandServiceClientFallback implements LandServiceClient {
         log.error("Fallback triggered: Unable to fetch land with ID: {} from land-service", id);
         log.error("Land service might be down or unreachable");
 
-        // Return null - let the calling service handle this appropriately
-        // Alternative: throw a custom exception
         return null;
     }
 }
