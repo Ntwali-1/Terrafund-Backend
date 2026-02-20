@@ -10,6 +10,12 @@
         <option value="$PROJECT_DIR$/services/land-service/pom.xml" />
         <option value="$PROJECT_DIR$/services/investment-service/pom.xml" />
         <option value="$PROJECT_DIR$/services/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/config-server/pom.xml" />
+        <option value="$PROJECT_DIR$/eureka-server/pom.xml" />
+        <option value="$PROJECT_DIR$/investment-service/pom.xml" />
+        <option value="$PROJECT_DIR$/land-service/pom.xml" />
+        <option value="$PROJECT_DIR$/user-service/pom.xml" />
       </list>
     </option>
   </component>
