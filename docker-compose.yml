@@ -1,31 +1,31 @@
 version: '3.8'
 
 services:
-  # Service Discovery
-  eureka-server:
-    build: ./services/eureka-server
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-    networks:
-      - land-platform-network
-
-  # Configuration Server
+  # Configuration Server (must start first)
   config-server:
-    build: ./services/config-server
+    build: ./config-server
     container_name: config-server
     ports:
       - "8888:8888"
+    networks:
+      - land-platform-network
+
+  # Service Discovery
+  eureka-server:
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
     depends_on:
-      - eureka-server
+      - config-server
     networks:
       - land-platform-network
 
   # User Service
   user-service:
-    build: ./services/user-service
+    build: ./user-service
     container_name: user-service
     ports:
       - "8081:8081"
@@ -33,12 +33,40 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/userdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
-      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     depends_on:
-      - eureka-server
       - config-server
+      - eureka-server
+    networks:
+      - land-platform-network
+    restart: on-failure
+
+  # Land Service
+  land-service:
+    build: ./land-service
+    container_name: land-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    depends_on:
+      - config-server
+      - eureka-server
+    networks:
+      - land-platform-network
+    restart: on-failure
+
+  # Investment Service
+  investment-service:
+    build: ./investment-service
+    container_name: investment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
+    depends_on:
+      - config-server
+      - eureka-server
     networks:
       - land-platform-network
     restart: on-failure
@@ -77,14 +105,18 @@ services:
 
   # API Gateway
   api-gateway:
-    build: ./services/api-gateway
+    build: ./api-gateway
     container_name: api-gateway
     ports:
       - "8080:8080"
     environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
     depends_on:
+      - config-server
       - eureka-server
+      - user-service
+      - land-service
+      - investment-service
     networks:
       - land-platform-network
 
